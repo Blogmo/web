@@ -1,0 +1,18 @@
+Terabox Video Player
+
+Creation Date  : 19 Juni 2024
+Current Version: 1.0.0
+
+Saya telah berhasil membuat sebuah proyek yang diberi nama Terabox Video Player. Proyek ini adalah sebuah pemutar video yang dibangun menggunakan kombinasi beberapa teknologi pemrograman, yaitu HTML, CSS, JavaScript, dan Bootstrap.
+Detail Teknologi:
+HTML      : Digunakan untuk struktur dasar dan elemen-elemen pada halaman web.
+CSS       : Digunakan untuk desain dan tata letak visual, membuat tampilan lebih menarik dan responsif.
+JavaScript: Digunakan untuk menambahkan interaktivitas dan fungsionalitas pada pemutar video.
+Bootstrap : Framework CSS yang digunakan untuk mempercepat proses pengembangan dan memastikan tampilan yang responsif di berbagai perangkat.
+
+Fitur Utama:
+Tampilan Responsif: Menggunakan Bootstrap untuk memastikan tampilan yang optimal di berbagai ukuran layar.
+Kontrol Pemutaran Video: Play, pause, volume control, dan fitur lainnya yang memudahkan pengguna dalam mengontrol video yang diputar.
+Desain Menarik: Menggunakan kombinasi CSS dan Bootstrap untuk menciptakan UI yang modern dan user-friendly.
+
+Proyek ini masih dalam tahap awal, dan umpan balik dari pengguna sangat diharapkan untuk perbaikan dan penambahan fitur di masa mendatang. Terima kasih atas perhatian dan dukungan Anda terhadap Terabox Video Player.
