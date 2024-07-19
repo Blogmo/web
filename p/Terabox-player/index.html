@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terabox Video Player</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .player-box {
+            background-color: #0056b3;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .input-group {
+            margin-top: 20px;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .modal-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+        .lang-menu {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .lang-select {
+            display: inline;
+            cursor: pointer;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-menu">
+        <span class="lang-select" onclick="changeLanguage('en')">EN</span> | 
+        <span class="lang-select" onclick="changeLanguage('id')">ID</span>
+    </div>
+    <div class="player-box">
+        <h2 id="title">Player Terabox</h2>
+        <p id="description">Enter the Terabox video URL in the input form below, make sure the URL you enter is correct</p>
+        <div class="input-group mb-3">
+            <input type="text" id="videoIdInput" class="form-control" placeholder="Enter the Terabox Video URL" aria-label="Terabox Video URL" required>
+            <div class="input-group-append">
+                <button class="btn btn-outline-light" type="button" onclick="loadVideo()">Submit</button>
+            </div>
+        </div>
+        <div id="submissionCountAlert">
+        You have submitted the URL 0/20 times.
+        </div>
+    </div>
+    <div class="alert alert-info" role="alert" id="infoAlert">
+        We would like to inform you that we are currently developing a feature for adding subtitles. To take advantage of this feature, you just need to prepare subtitle files in formats like .ass, .srt, and other similar formats.
+    </div>
+    <div class="alert alert-danger d-none" role="alert" id="waitAlert">
+        You have exceeded the daily limit. Please wait <span id="countdown"></span> to try again.
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalLabel">Terabox Video Player</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="teraboxIframe" class="modal-iframe" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    var submissionCount = 0;
+    var maxSubmissions = 20;
+    var waitTime = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+    // Load data from local storage on page load
+    window.onload = function() {
+        loadSubmissionCount();
+        resetCountDaily();
+    };
+
+    function loadSubmissionCount() {
+        var storedCount = localStorage.getItem('submissionCount');
+        var lastSubmitTime = localStorage.getItem('lastSubmitTime');
+
+        if (storedCount && lastSubmitTime) {
+            var currentTime = new Date().getTime();
+            if (currentTime - lastSubmitTime < 24 * 60 * 60 * 1000) { // within the same day
+                submissionCount = parseInt(storedCount);
+                updateSubmissionCountAlert();
+
+                if (submissionCount >= maxSubmissions) {
+                    var remainingTime = waitTime - (currentTime - lastSubmitTime);
+                    if (remainingTime > 0) {
+                        showWaitAlert(remainingTime);
+                    } else {
+                        submissionCount = 0;
+                        saveSubmissionCount();
+                    }
+                }
+            } else {
+                localStorage.removeItem('submissionCount');
+                localStorage.removeItem('lastSubmitTime');
+            }
+        }
+    }
+
+    function saveSubmissionCount() {
+        localStorage.setItem('submissionCount', submissionCount);
+        localStorage.setItem('lastSubmitTime', new Date().getTime());
+    }
+
+    function resetCountDaily() {
+        var now = new Date();
+        var midnight = new Date();
+        midnight.setHours(24, 0, 0, 0); // next midnight
+
+        setTimeout(function() {
+            submissionCount = 0;
+            localStorage.removeItem('submissionCount');
+            localStorage.removeItem('lastSubmitTime');
+            updateSubmissionCountAlert();
+            resetCountDaily(); // schedule next reset
+        }, midnight.getTime() - now.getTime());
+    }
+
+    function loadVideo() {
+        var videoIdInput = document.getElementById('videoIdInput');
+
+        if (videoIdInput.value === "") {
+            alert("Please enter a Terabox Video URL.");
+            return;
+        }
+
+        if (submissionCount >= maxSubmissions) {
+            var lastSubmitTime = localStorage.getItem('lastSubmitTime');
+            var currentTime = new Date().getTime();
+
+            if (currentTime - lastSubmitTime < waitTime) {
+                var remainingTime = waitTime - (currentTime - lastSubmitTime);
+                showWaitAlert(remainingTime);
+                return;
+            } else {
+                submissionCount = 0; // reset the count after wait time
+                saveSubmissionCount();
+            }
+        }
+
+        var videoUrl = videoIdInput.value;
+        var videoId = extractVideoId(videoUrl);
+
+        if (!videoId) {
+            alert("Invalid Terabox Video URL.");
+            return;
+        }
+
+        var iframe = document.getElementById('teraboxIframe');
+        iframe.src = `https://terabox.com/sharing/embed?surl=${videoId}&resolution=1080&autoplay=true&mute=false&uk=4400542038372&fid=649544993701810&slid=`;
+        $('#videoModal').modal('show');
+
+        submissionCount++;
+        saveSubmissionCount();
+        updateSubmissionCountAlert();
+    }
+
+    function extractVideoId(url) {
+        var urlParams = new URLSearchParams(url.split('?')[1]);
+        return urlParams.get('surl');
+    }
+
+    $('#videoModal').on('hidden.bs.modal', function () {
+        var iframe = document.getElementById('teraboxIframe');
+        iframe.src = '';
+    });
+
+    function updateSubmissionCountAlert() {
+        document.getElementById('submissionCountAlert').innerText = (document.documentElement.lang === 'en') ? `You have submitted the URL ${submissionCount}/${maxSubmissions} times.` : `Anda telah mengirim URL ${submissionCount}/${maxSubmissions} kali.`;
+    }
+
+    function showWaitAlert(remainingTime) {
+        document.getElementById('infoAlert').classList.add('d-none');
+        document.getElementById('submissionCountAlert').classList.add('d-none');
+        var waitAlert = document.getElementById('waitAlert');
+        waitAlert.classList.remove('d-none');
+        document.getElementById('waitAlert').innerHTML = (document.documentElement.lang === 'en') ? 'You have exceeded the daily limit. Please wait <span id="countdown"></span> to try again.' : 'Anda telah melebihi batas harian. Harap tunggu <span id="countdown"></span> untuk mencoba lagi.';
+        updateCountdown(remainingTime);
+
+        var countdownInterval = setInterval(function() {
+            remainingTime -= 1000;
+            updateCountdown(remainingTime);
+
+            if (remainingTime <= 0) {
+                clearInterval(countdownInterval);
+                waitAlert.classList.add('d-none');
+                document.getElementById('infoAlert').classList.remove('d-none');
+                document.getElementById('submissionCountAlert').classList.remove('d-none');
+                submissionCount = 0;
+                saveSubmissionCount();
+                updateSubmissionCountAlert();
+            }
+        }, 1000);
+    }
+
+    function updateCountdown(remainingTime) {
+        var minutes = Math.floor(remainingTime / (60 * 1000));
+        var seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+        document.getElementById('countdown').innerText = `${minutes}m ${seconds}s`;
+    }
+
+    function changeLanguage(lang) {
+        document.documentElement.lang = lang;
+        if (lang === 'en') {
+            document.getElementById('title').innerText = 'Terabox Player';
+            document.getElementById('description').innerText = 'Enter the Terabox video URL in the input form below, make sure the URL you enter is correct';
+            document.getElementById('infoAlert').innerText = 'We would like to inform you that we are currently developing a feature for adding subtitles. To take advantage of this feature, you just need to prepare subtitle files in formats like .ass, .srt, and other similar formats.';
+            updateSubmissionCountAlert();
+            document.getElementById('videoIdInput').placeholder = 'Enter the Terabox Video URL';
+            document.getElementById('waitAlert').innerHTML = 'You have exceeded the daily limit. Please wait <span id="countdown"></span> to try again.';
+        } else if (lang === 'id') {
+            document.getElementById('title').innerText = 'Player Terabox';
+            document.getElementById('description').innerText = 'Masukkan URL video Terabox pada form input di bawah ini, pastikan URL yang Anda masukkan benar';
+            document.getElementById('infoAlert').innerText = 'Kami ingin menginformasikan bahwa saat ini kami sedang mengembangkan fitur penambahan subtitle. Untuk memanfaatkan fitur ini, Anda hanya perlu menyiapkan file subtitle dalam format seperti .ass, .srt, dan format serupa lainnya.';
+            updateSubmissionCountAlert();
+            document.getElementById('videoIdInput').placeholder = 'Masukkan URL Video Terabox';
+            document.getElementById('waitAlert').innerHTML = 'Anda telah melebihi batas harian. Harap tunggu <span id="countdown"></span> untuk mencoba lagi.';
+        }
+    }
+</script>
+
+</body>
+</html>
