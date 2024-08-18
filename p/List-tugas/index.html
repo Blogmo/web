@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Table</title>
+    <title>List Tugas</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn-sdotid.adg.id/images/b059bca9-76ed-42e1-9f77-67e2015e3928_2048x1706.png">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
@@ -344,9 +345,9 @@
             const modalBody = document.querySelector('.modal-body');
 
             modalBody.innerHTML = `
-                <p><strong>Mapel:</strong> ${getMapelBadge(item.mapel)}</p>
-                <p><strong>Deadline:</strong> ${formattedDate}</p>
-                <p><strong>Status:</strong> ${status}</p>
+                <p><strong>Mapel</strong> ${getMapelBadge(item.mapel)}</p>
+                <p><strong>Deadline</strong> ${formattedDate}</p>
+                <p><strong>Status</strong> ${status}</p>
                 <p><hr>${item.detail.replace(/\\n/g, '<br>')}</p>
             `;
 
