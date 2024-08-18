@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .modal-content {
+            border-radius: 0.5em;
+            overflow: hidden;
+        }
+        .modal-header {
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .modal-title {
+            font-size: 1.25em;
+            font-weight: bold;
+        }
+        .modal-body {
+            padding: 1.5em;
+            text-align: left; /* Align text to the left */
+        }
+        .modal-body p {
+            margin-bottom: 1em;
+            font-size: 1em;
+            white-space: pre-wrap; /* Ensure line breaks are respected */
+        }
+        .modal-body p strong {
+            display: inline-block;
+            width: 120px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            background-color: #f7f7f7;
+        }
+        .status-badge, .mapel-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4em 0.75em;
+            border-radius: 1em;
+            font-size: 0.875em;
+            font-weight: 500;
+            color: #fff;
+        }
+        /* Status Badges */
+        .status-pending {
+            background-color: #fdecea;
+            color: #f44336;
+        }
+        .status-in-progress {
+            background-color: #fff7e6;
+            color: #ff9800;
+        }
+        .status-completed {
+            background-color: #e6f4ea;
+            color: #4caf50;
+        }
+        .status-badge .fas {
+            margin-right: 0.5em;
+        }
+        /* Mapel Badges */
+        .mapel-religion {
+            background-color: #795548;
+        }
+        .mapel-ppkn {
+            background-color: #ff5722;
+        }
+        .mapel-indonesian {
+            background-color: #f44336;
+        }
+        .mapel-mathematics {
+            background-color: #3f51b5;
+        }
+        .mapel-history {
+            background-color: #9e9e9e;
+        }
+        .mapel-english {
+            background-color: #03a9f4;
+        }
+        .mapel-art {
+            background-color: #e91e63;
+        }
+        .mapel-sport {
+            background-color: #4caf50;
+        }
+        .mapel-businessman {
+            background-color: #009688;
+        }
+        .mapel-mathematics-p {
+            background-color: #673ab7;
+        }
+        .mapel-physics-p {
+            background-color: #ffeb3b;
+            color: #000;
+        }
+        .mapel-chemistry-p {
+            background-color: #8bc34a;
+            color: #000;
+        }
+        .mapel-biology-p {
+            background-color: #4caf50;
+        }
+        .mapel-japan {
+            background-color: #607d8b;
+        }
+        .mapel-economics-lm {
+            background-color: #9c27b0;
+        }
+        .mapel-badge .fas {
+            margin-right: 0.5em;
+        }
+        .btn-add {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            border-radius: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Data Table</h2>
+            <button class="btn btn-success btn-add" data-toggle="modal" data-target="#addModal">
+                <i class="fas fa-plus"></i> Add
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mapel</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Detail</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Details -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Detail Tugas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Data will be populated here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add New Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe src="https://example.com" width="100%" height="500px" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch data from Steinhq.com
+        async function fetchData() {
+            const response = await fetch('https://api.steinhq.com/v1/storages/66a49e114d11fd04f017c435/Sheet1');
+            const data = await response.json();
+            return data;
+        }
+
+        // Function to calculate status based on deadline
+        function calculateStatus(deadline) {
+            const today = new Date();
+            const deadlineDate = new Date(deadline.split('/').reverse().join('-'));
+            const timeDiff = deadlineDate - today;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+            if (daysDiff > 3) {
+                return 'Pending';
+            } else if (daysDiff >= 0) {
+                return 'In Progress';
+            } else {
+                return 'Completed';
+            }
+        }
+
+        // Function to format date
+        function formatDate(date) {
+            const [day, month, year] = date.split('/');
+            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        }
+
+        // Function to get status badge HTML
+        function getStatusBadge(status) {
+            if (status === 'Pending') {
+                return `<span class="status-badge status-pending"><i class="fas fa-exclamation-triangle"></i>Pending</span>`;
+            } else if (status === 'In Progress') {
+                return `<span class="status-badge status-in-progress"><i class="fas fa-tasks"></i>In Progress</span>`;
+            } else {
+                return `<span class="status-badge status-completed"><i class="fas fa-check-circle"></i>Completed</span>`;
+            }
+        }
+
+        // Function to get mapel badge HTML
+        function getMapelBadge(mapel) {
+            let badgeClass = '';
+            let iconClass = '';
+            switch (mapel) {
+                case 'RELIGION':
+                    badgeClass = 'mapel-religion';
+                    iconClass = 'fas fa-praying-hands';
+                    break;
+                case 'PPKN':
+                    badgeClass = 'mapel-ppkn';
+                    iconClass = 'fas fa-balance-scale';
+                    break;
+                case 'INDONESIAN':
+                    badgeClass = 'mapel-indonesian';
+                    iconClass = 'fas fa-book';
+                    break;
+                case 'MATHEMATICS':
+                    badgeClass = 'mapel-mathematics';
+                    iconClass = 'fas fa-square-root-alt';
+                    break;
+                case 'HISTORY':
+                    badgeClass = 'mapel-history';
+                    iconClass = 'fas fa-landmark';
+                    break;
+                case 'ENGLISH':
+                    badgeClass = 'mapel-english';
+                    iconClass = 'fas fa-language';
+                    break;
+                case 'ART':
+                    badgeClass = 'mapel-art';
+                    iconClass = 'fas fa-paint-brush';
+                    break;
+                case 'SPORT':
+                    badgeClass = 'mapel-sport';
+                    iconClass = 'fas fa-futbol';
+                    break;
+                case 'BUSINESSMAN':
+                    badgeClass = 'mapel-businessman';
+                    iconClass = 'fas fa-briefcase';
+                    break;
+                case 'MATHEMATICS (P)':
+                    badgeClass = 'mapel-mathematics-p';
+                    iconClass = 'fas fa-calculator';
+                    break;
+                case 'PHYSICS (P)':
+                    badgeClass = 'mapel-physics-p';
+                    iconClass = 'fas fa-atom';
+                    break;
+                case 'CHEMISTRY (P)':
+                    badgeClass = 'mapel-chemistry-p';
+                    iconClass = 'fas fa-flask';
+                    break;
+                case 'BIOLOGY (P)':
+                    badgeClass = 'mapel-biology-p';
+                    iconClass = 'fas fa-leaf';
+                    break;
+                case 'JAPAN':
+                    badgeClass = 'mapel-japan';
+                    iconClass = 'fas fa-landmark';
+                    break;
+                case 'ECONOMICS (LM)':
+                    badgeClass = 'mapel-economics-lm';
+                    iconClass = 'fas fa-coins';
+                    break;
+                default:
+                    badgeClass = '';
+                    iconClass = '';
+            }
+            return `<span class="mapel-badge ${badgeClass}"><i class="${iconClass}"></i>${mapel}</span>`;
+        }
+
+        // Function to populate table with data
+        async function populateTable() {
+            const tableBody = document.getElementById('tableBody');
+            const data = await fetchData();
+
+            // Sort data by deadline
+            data.sort((a, b) => {
+                const dateA = new Date(a.deadline.split('/').reverse().join('-'));
+                const dateB = new Date(b.deadline.split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            // Move past deadlines to the bottom
+            const today = new Date();
+            const upcoming = data.filter(item => new Date(item.deadline.split('/').reverse().join('-')) >= today);
+            const past = data.filter(item => new Date(item.deadline.split('/').reverse().join('-')) < today);
+            const sortedData = [...upcoming, ...past];
+
+            sortedData.forEach((item, index) => {
+                const status = calculateStatus(item.deadline);
+                const formattedDate = formatDate(item.deadline);
+                const row = `<tr>
+                                <td>${getMapelBadge(item.mapel)}</td>
+                                <td>${formattedDate}</td>
+                                <td>${getStatusBadge(status)}</td>
+                                <td><button class="btn btn-primary" onclick="showDetail(${index})">View</button></td>
+                             </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            // Save data globally for modal use
+            window.tableData = sortedData;
+        }
+
+        // Function to show detail in modal
+        function showDetail(index) {
+            const item = window.tableData[index];
+            const status = calculateStatus(item.deadline);
+            const formattedDate = formatDate(item.deadline);
+            const modalBody = document.querySelector('.modal-body');
+
+            modalBody.innerHTML = `
+                <p><strong>Mapel:</strong> ${getMapelBadge(item.mapel)}</p>
+                <p><strong>Deadline:</strong> ${formattedDate}</p>
+                <p><strong>Status:</strong> ${status}</p>
+                <p><hr>${item.detail.replace(/\\n/g, '<br>')}</p>
+            `;
+
+            $('#detailModal').modal('show');
+        }
+
+        // Load data when the page loads
+        window.onload = populateTable;
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
