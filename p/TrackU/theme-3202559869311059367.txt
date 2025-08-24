@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackU</title>
+<!-- favicon standar -->
+  <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_e3_-fbRJuS2lly4wRjPFMkLvpZ5hSUZKR5-4oi6qesKSGR-v2Ls4Nj-X-FJrBJQbGtzqzmAgDBr8okQQjVeHw_P89CRP-8Th6U12evychLS3kIuo_rAPmMKdAqhvaiCGxVUKJuVeTxpkWrMUeCiO3WoX783s3AVqa7ZwlpcTSy7HPlI/s1600/1000146019.png">
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_e3_-fbRJuS2lly4wRjPFMkLvpZ5hSUZKR5-4oi6qesKSGR-v2Ls4Nj-X-FJrBJQbGtzqzmAgDBr8okQQjVeHw_P89CRP-8Th6U12evychLS3kIuo_rAPmMKdAqhvaiCGxVUKJuVeTxpkWrMUeCiO3WoX783s3AVqa7ZwlpcTSy7HPlI/s1600/1000146019.png">
+
+<!-- icon untuk Android (home screen) -->
+<link rel="icon" type="image/png" sizes="192x192" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_e3_-fbRJuS2lly4wRjPFMkLvpZ5hSUZKR5-4oi6qesKSGR-v2Ls4Nj-X-FJrBJQbGtzqzmAgDBr8okQQjVeHw_P89CRP-8Th6U12evychLS3kIuo_rAPmMKdAqhvaiCGxVUKJuVeTxpkWrMUeCiO3WoX783s3AVqa7ZwlpcTSy7HPlI/s1600/1000146019.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_e3_-fbRJuS2lly4wRjPFMkLvpZ5hSUZKR5-4oi6qesKSGR-v2Ls4Nj-X-FJrBJQbGtzqzmAgDBr8okQQjVeHw_P89CRP-8Th6U12evychLS3kIuo_rAPmMKdAqhvaiCGxVUKJuVeTxpkWrMUeCiO3WoX783s3AVqa7ZwlpcTSy7HPlI/s1600/1000146019.png">
+
+<!-- icon untuk iOS Safari -->
+<link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_e3_-fbRJuS2lly4wRjPFMkLvpZ5hSUZKR5-4oi6qesKSGR-v2Ls4Nj-X-FJrBJQbGtzqzmAgDBr8okQQjVeHw_P89CRP-8Th6U12evychLS3kIuo_rAPmMKdAqhvaiCGxVUKJuVeTxpkWrMUeCiO3WoX783s3AVqa7ZwlpcTSy7HPlI/s1600/1000146019.png">
+
+<!-- warna status bar -->
+<meta name="theme-color" content="#000000">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #4f46e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        .bottom-nav {
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .add-button {
+            transform: translateY(-20px);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .tab-active {
+            color: #4f46e5;
+            border-bottom: 3px solid #4f46e5;
+        }
+        .tab-inactive {
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="text-center">
+            <div class="text-white text-4xl font-bold mb-4">TrackU</div>
+            <div class="w-64 h-2 bg-white/30 rounded-full overflow-hidden">
+                <div id="loader-bar" class="h-full bg-white rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="text-white/80 mt-4 text-sm">Memuat data perjalananmu...</div>
+        </div>
+    </div>
+
+
+    <!-- First Time Setup Modal -->
+    <div id="setupModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 w-11/12 max-w-md mx-auto slide-up">
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4">Selamat Datang di TrackU!</h2>
+            <p class="text-gray-600 mb-6">Isi informasi dasar untuk memulai perjalananmu menuju kampus impian.</p>
+            
+            <form id="setupForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="username">Nama Panggilan</label>
+                    <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Budi" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="kelas">Kelas Saat Ini</label>
+                    <select id="kelas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="" disabled selected>Pilih kelas</option>
+                        <option value="12 IPA">12 IPA</option>
+                        <option value="12 IPS">12 IPS</option>
+                        <option value="12 BAHASA">12 BAHASA</option>
+                        <option value="12 SMK">12 SMK</option>
+                        <option value="12 MA">12 MA</option>
+                        <option value="GAPYERS">GAPYERS</option>
+                        <option value="SEMI GAPYERS">SEMI GAPYERS</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="kampus">Kampus Impian</label>
+                    <input type="text" id="kampus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Universitas Gadjah Mada" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="jurusan">Jurusan Impian</label>
+                    <input type="text" id="jurusan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Teknik Elektro" required>
+                </div>
+                
+                <div class="mb-4 text-xs text-gray-500">
+                    <p>✓ Semua data hanya disimpan di perangkat kamu</p>
+                    <p>✓ Tidak ada koneksi ke server atau proses login</p>
+                    <p>✓ Bisa digunakan secara offline</p>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">Mulai Perjalanan</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 pb-20">
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page pb-16">
+            <div class="pt-6 pb-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Halo, <span id="userNameDisplay">Sobat TrackU</span>!</h1>
+                        <p class="text-gray-600 text-sm">Perjalanan menuju <span id="kampusDisplay">kampus impian</span></p>
+                    </div>
+                    <div class="bg-indigo-100 p-2 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="text-xs text-gray-500 mb-1">Total Try Out</div>
+                    <div class="text-xl font-bold text-gray-800" id="totalTryOut">0</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="text-xs text-gray-500 mb-1">Rata-rata TPS</div>
+                    <div class="text-xl font-bold text-indigo-600" id="avgTPS">0.0</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="text-xs text-gray-500 mb-1">Rata-rata Literasi</div>
+                    <div class="text-xl font-bold text-purple-600" id="avgLiterasi">0.0</div>
+                </div>
+            </div>
+
+
+            <!-- Progress Chart -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-gray-800">Perkembangan Nilai</h2>
+                    <div class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full" id="progressStatus">Stabil</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+
+            <!-- Recent Try Outs -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-gray-800">Hasil Try Out Terakhir</h2>
+                    <button id="viewAllTryOuts" class="text-xs text-indigo-600 font-medium">Lihat Semua</button>
+                </div>
+                <div id="recentTryOutsList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-6">
+                        Belum ada data try out.<br>
+                        Tambahkan hasil try out pertamamu!
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Recent Activities -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-gray-800">Aktivitas Belajar Terakhir</h2>
+                    <button id="viewAllActivities" class="text-xs text-indigo-600 font-medium">Lihat Semua</button>
+                </div>
+                <div id="recentActivitiesList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-6">
+                        Belum ada data aktivitas belajar.<br>
+                        Catat aktivitas belajarmu!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Input Try Out Page -->
+        <div id="inputTryOutPage" class="page hidden pb-16">
+            <div class="pt-6 pb-4 flex items-center">
+                <button id="backToHome" class="mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-800">Input Hasil Try Out</h1>
+            </div>
+
+
+            <form id="tryOutForm" class="bg-white rounded-xl p-5 shadow-sm">
+                <!-- General Info -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Informasi Umum</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="tryOutName">Nama Try Out</label>
+                        <input type="text" id="tryOutName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Try Out SNBT 1" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="organizer">Penyelenggara</label>
+                        <input type="text" id="organizer" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: RuangLatih" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="tryOutDate">Tanggal Try Out</label>
+                        <input type="date" id="tryOutDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    </div>
+                </div>
+
+
+                <!-- TPS Section -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">TPS (Tes Potensi Skolastik)</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="puCorrect">PU - Jumlah Benar</label>
+                            <input type="number" id="puCorrect" min="0" max="30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-30" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="puScore">PU - Skor</label>
+                            <input type="number" id="puScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="ppuCorrect">PPU - Jumlah Benar</label>
+                            <input type="number" id="ppuCorrect" min="0" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-20" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="ppuScore">PPU - Skor</label>
+                            <input type="number" id="ppuScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pbmCorrect">PBM - Jumlah Benar</label>
+                            <input type="number" id="pbmCorrect" min="0" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-20" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pbmScore">PBM - Skor</label>
+                            <input type="number" id="pbmScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pkCorrect">PK - Jumlah Benar</label>
+                            <input type="number" id="pkCorrect" min="0" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-20" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pkScore">PK - Skor</label>
+                            <input type="number" id="pkScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-indigo-50 p-3 rounded-lg">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-700">Total TPS:</span>
+                            <span class="text-sm font-bold text-indigo-700" id="totalTpsScore">0.0</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Literasi Section -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Literasi</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="lbiCorrect">LBI - Jumlah Benar</label>
+                            <input type="number" id="lbiCorrect" min="0" max="30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-30" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="lbiScore">LBI - Skor</label>
+                            <input type="number" id="lbiScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="lbeCorrect">LBE - Jumlah Benar</label>
+                            <input type="number" id="lbeCorrect" min="0" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-20" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="lbeScore">LBE - Skor</label>
+                            <input type="number" id="lbeScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pmCorrect">PM - Jumlah Benar</label>
+                            <input type="number" id="pmCorrect" min="0" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-20" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="pmScore">PM - Skor</label>
+                            <input type="number" id="pmScore" min="0" max="1000" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0-1000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-3 rounded-lg">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-700">Total Literasi:</span>
+                            <span class="text-sm font-bold text-purple-700" id="totalLiterasiScore">0.0</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Total Score -->
+                <div class="mb-6">
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Skor Gabungan UTBK:</span>
+                            <span class="font-bold text-gray-800" id="totalUtbkScore">0.0</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Notes -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="notes">Catatan (opsional)</label>
+                    <textarea id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Catatan tentang try out ini..."></textarea>
+                </div>
+
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Simpan Hasil Try Out</button>
+            </form>
+        </div>
+
+
+        <!-- Input Activity Page -->
+        <div id="inputActivityPage" class="page hidden pb-16">
+            <div class="pt-6 pb-4 flex items-center">
+                <button id="backToHomeFromActivity" class="mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-800">Catat Aktivitas Belajar</h1>
+            </div>
+
+
+            <form id="activityForm" class="bg-white rounded-xl p-5 shadow-sm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activityDate">Tanggal</label>
+                    <input type="date" id="activityDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activitySubtest">Subtes yang Dipelajari</label>
+                    <select id="activitySubtest" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="" disabled selected>Pilih subtes</option>
+                        <optgroup label="TPS">
+                            <option value="PU">PU (Penalaran Umum)</option>
+                            <option value="PPU">PPU (Pemahaman Bacaan & Menulis)</option>
+                            <option value="PBM">PBM (Pengetahuan & Pemahaman Umum)</option>
+                            <option value="PK">PK (Pengetahuan Kuantitatif)</option>
+                        </optgroup>
+                        <optgroup label="Literasi">
+                            <option value="LBI">LBI (Bahasa Indonesia)</option>
+                            <option value="LBE">LBE (Bahasa Inggris)</option>
+                            <option value="PM">PM (Penalaran Matematika)</option>
+                        </optgroup>
+                        <option value="Umum">Umum (Semua Subtes)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activityMaterial">Materi Spesifik</label>
+                    <input type="text" id="activityMaterial" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Sinonim PU, Grafik PM" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activityType">Jenis Kegiatan</label>
+                    <select id="activityType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="" disabled selected>Pilih jenis kegiatan</option>
+                        <option value="Latihan Soal">Latihan Soal</option>
+                        <option value="Baca Modul">Baca Modul</option>
+                        <option value="Nonton Video">Nonton Video</option>
+                        <option value="Diskusi">Diskusi</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activityDuration">Durasi (menit)</label>
+                    <input type="number" id="activityDuration" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: 60" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="activityNotes">Catatan (opsional)</label>
+                    <textarea id="activityNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Catatan tentang aktivitas belajar ini..."></textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Simpan Aktivitas</button>
+            </form>
+        </div>
+
+
+        <!-- Profile Page -->
+        <div id="profilePage" class="page hidden pb-16">
+            <div class="pt-6 pb-4">
+                <h1 class="text-2xl font-bold text-gray-800">Profil Pengguna</h1>
+            </div>
+
+
+            <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold" id="profileInitial">
+                        T
+                    </div>
+                </div>
+                
+                <form id="profileForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="profileName">Nama Panggilan</label>
+                        <input type="text" id="profileName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Budi" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="profileKelas">Kelas Saat Ini</label>
+                        <select id="profileKelas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                            <option value="" disabled>Pilih kelas</option>
+                            <option value="12 IPA">12 IPA</option>
+                            <option value="12 IPS">12 IPS</option>
+                            <option value="12 BAHASA">12 BAHASA</option>
+                            <option value="12 SMK">12 SMK</option>
+                            <option value="12 MA">12 MA</option>
+                            <option value="GAPYERS">GAPYERS</option>
+                            <option value="SEMI GAPYERS">SEMI GAPYERS</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="profileKampus">Kampus Impian</label>
+                        <input type="text" id="profileKampus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Universitas Gadjah Mada" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="profileJurusan">Jurusan Impian</label>
+                        <input type="text" id="profileJurusan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Teknik Elektro" required>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 mb-4">Simpan Perubahan</button>
+                </form>
+            </div>
+
+
+            <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+                <h2 class="font-semibold text-gray-800 mb-4">Statistik Belajar</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-500 mb-1">Total Try Out</div>
+                        <div class="text-lg font-bold text-gray-800" id="profileTotalTryOut">0</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-500 mb-1">Total Jam Belajar</div>
+                        <div class="text-lg font-bold text-gray-800" id="profileTotalHours">0</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-500 mb-1">Skor Tertinggi</div>
+                        <div class="text-lg font-bold text-green-600" id="profileHighestScore">0.0</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-500 mb-1">Skor Rata-rata</div>
+                        <div class="text-lg font-bold text-indigo-600" id="profileAvgScore">0.0</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="bg-white rounded-xl p-5 shadow-sm">
+                <h2 class="font-semibold text-gray-800 mb-4">Tentang TrackU</h2>
+                <p class="text-gray-600 text-sm mb-4">
+                    TrackU adalah dashboard pribadi untuk siswa yang sedang mempersiapkan diri menghadapi seleksi masuk perguruan tinggi, khususnya UTBK.
+                </p>
+                <p class="text-gray-600 text-sm mb-4">
+                    Semua data disimpan secara lokal di perangkat pengguna dan dapat digunakan secara offline, tanpa perlu login atau koneksi ke server.
+                </p>
+                <div class="text-center mt-6">
+                    <p class="text-xs text-gray-400">TrackU v1.0</p>
+                    <p class="text-xs text-gray-400">Teman Seperjuanganmu Menuju Kampus Impian!</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- All Try Outs Page -->
+        <div id="allTryOutsPage" class="page hidden pb-16">
+            <div class="pt-6 pb-4 flex items-center">
+                <button id="backToHomeFromAllTryOuts" class="mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-800">Semua Hasil Try Out</h1>
+            </div>
+
+
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex space-x-4">
+                        <button class="tab-active py-2 px-1 text-sm font-medium" id="tabAllTryOuts">Semua</button>
+                        <button class="tab-inactive py-2 px-1 text-sm font-medium" id="tabTpsTryOuts">TPS</button>
+                        <button class="tab-inactive py-2 px-1 text-sm font-medium" id="tabLiterasiTryOuts">Literasi</button>
+                    </div>
+                    <div>
+                        <select id="sortTryOuts" class="text-xs border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="date-desc">Terbaru</option>
+                            <option value="date-asc">Terlama</option>
+                            <option value="score-desc">Nilai Tertinggi</option>
+                            <option value="score-asc">Nilai Terendah</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="allTryOutsList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-6">
+                        Belum ada data try out.<br>
+                        Tambahkan hasil try out pertamamu!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- All Activities Page -->
+        <div id="allActivitiesPage" class="page hidden pb-16">
+            <div class="pt-6 pb-4 flex items-center">
+                <button id="backToHomeFromAllActivities" class="mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-800">Semua Aktivitas Belajar</h1>
+            </div>
+
+
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex space-x-4">
+                        <button class="tab-active py-2 px-1 text-sm font-medium" id="tabAllActivities">Semua</button>
+                        <button class="tab-inactive py-2 px-1 text-sm font-medium" id="tabTpsActivities">TPS</button>
+                        <button class="tab-inactive py-2 px-1 text-sm font-medium" id="tabLiterasiActivities">Literasi</button>
+                    </div>
+                    <div>
+                        <select id="sortActivities" class="text-xs border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="date-desc">Terbaru</option>
+                            <option value="date-asc">Terlama</option>
+                            <option value="duration-desc">Durasi Terlama</option>
+                            <option value="duration-asc">Durasi Tersingkat</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="allActivitiesList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-6">
+                        Belum ada data aktivitas belajar.<br>
+                        Catat aktivitas belajarmu!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Try Out Detail Modal -->
+        <div id="tryOutDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-6 w-11/12 max-w-md mx-auto slide-up max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-indigo-700" id="detailTryOutName">Try Out SNBT 1</h2>
+                    <button id="closeTryOutDetail" class="text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Penyelenggara:</span>
+                        <span class="font-medium" id="detailOrganizer">RuangLatih</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Tanggal:</span>
+                        <span class="font-medium" id="detailDate">10 Juni 2025</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">TPS</h3>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-2">
+                            <div class="text-gray-600">Subtes</div>
+                            <div class="text-gray-600 text-center">Benar</div>
+                            <div class="text-gray-600 text-right">Skor</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>PU</div>
+                            <div class="text-center" id="detailPuCorrect">24</div>
+                            <div class="text-right font-medium" id="detailPuScore">800.0</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>PPU</div>
+                            <div class="text-center" id="detailPpuCorrect">18</div>
+                            <div class="text-right font-medium" id="detailPpuScore">900.0</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>PBM</div>
+                            <div class="text-center" id="detailPbmCorrect">10</div>
+                            <div class="text-right font-medium" id="detailPbmScore">500.0</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>PK</div>
+                            <div class="text-center" id="detailPkCorrect">15</div>
+                            <div class="text-right font-medium" id="detailPkScore">750.0</div>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Total TPS:</span>
+                                <span class="font-bold text-indigo-700" id="detailTotalTps">737.5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Literasi</h3>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-2">
+                            <div class="text-gray-600">Subtes</div>
+                            <div class="text-gray-600 text-center">Benar</div>
+                            <div class="text-gray-600 text-right">Skor</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>LBI</div>
+                            <div class="text-center" id="detailLbiCorrect">25</div>
+                            <div class="text-right font-medium" id="detailLbiScore">833.3</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>LBE</div>
+                            <div class="text-center" id="detailLbeCorrect">14</div>
+                            <div class="text-right font-medium" id="detailLbeScore">700.0</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-sm mb-1">
+                            <div>PM</div>
+                            <div class="text-center" id="detailPmCorrect">18</div>
+                            <div class="text-right font-medium" id="detailPmScore">900.0</div>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Total Literasi:</span>
+                                <span class="font-bold text-purple-700" id="detailTotalLiterasi">811.1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Skor Gabungan UTBK:</span>
+                            <span class="font-bold text-gray-800" id="detailTotalUtbk">774.3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="detailNotesContainer" class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Catatan</h3>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-sm text-gray-700" id="detailNotes">Sedikit kesulitan di PBM & LBE.</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="editTryOut" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+                        <div class="flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </div>
+                    </button>
+                    <button id="deleteTryOut" class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+                        <div class="flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Hapus
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Activity Detail Modal -->
+        <div id="activityDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-6 w-11/12 max-w-md mx-auto slide-up">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-indigo-700" id="detailActivityMaterial">Sinonim PU</h2>
+                    <button id="closeActivityDetail" class="text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Tanggal:</span>
+                        <span class="font-medium" id="detailActivityDate">10 Juni 2025</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Subtes:</span>
+                        <span class="font-medium" id="detailActivitySubtest">PU (Penalaran Umum)</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Jenis Kegiatan:</span>
+                        <span class="font-medium" id="detailActivityType">Latihan Soal</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Durasi:</span>
+                        <span class="font-medium" id="detailActivityDuration">60 menit</span>
+                    </div>
+                </div>
+                
+                <div id="detailActivityNotesContainer" class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Catatan</h3>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-sm text-gray-700" id="detailActivityNotes">Latihan soal sinonim dari modul baru.</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="editActivity" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+                        <div class="flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </div>
+                    </button>
+                    <button id="deleteActivity" class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+                        <div class="flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Hapus
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Confirmation Modal -->
+        <div id="confirmationModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-6 w-11/12 max-w-md mx-auto slide-up">
+                <h2 class="text-xl font-bold text-gray-800 mb-4" id="confirmationTitle">Konfirmasi</h2>
+                <p class="text-gray-600 mb-6" id="confirmationMessage">Apakah kamu yakin ingin menghapus data ini?</p>
+                
+                <div class="flex space-x-2">
+                    <button id="cancelConfirmation" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-200">Batal</button>
+                    <button id="confirmAction" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">Hapus</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Add Menu Modal -->
+        <div id="addMenuModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-6 w-11/12 max-w-md mx-auto slide-up">
+                <h2 class="text-xl font-bold text-indigo-700 mb-6 text-center">Tambah Data</h2>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <button id="addTryOutBtn" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-4 px-4 rounded-xl transition duration-200">
+                        <div class="flex items-center">
+                            <div class="bg-indigo-100 p-3 rounded-lg mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <div class="text-left">
+                                <div class="font-semibold">Input Hasil Try Out</div>
+                                <div class="text-xs text-gray-600">Catat hasil try out yang telah kamu ikuti</div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button id="addActivityBtn" class="bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium py-4 px-4 rounded-xl transition duration-200">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                            <div class="text-left">
+                                <div class="font-semibold">Input Aktivitas Belajar</div>
+                                <div class="text-xs text-gray-600">Catat aktivitas belajar sehari-hari</div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                
+                <button id="closeAddMenu" class="w-full text-gray-500 mt-6 text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white bottom-nav">
+        <div class="flex justify-around items-center h-16">
+            <button id="homeBtn" class="flex flex-col items-center justify-center w-1/3 text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            
+            <button id="addBtn" class="bg-indigo-600 text-white rounded-full w-14 h-14 flex items-center justify-center add-button">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+            
+            <button id="profileBtn" class="flex flex-col items-center justify-center w-1/3 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="text-xs mt-1">Profil</span>
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // Data Storage
+        const storage = {
+            profile: null,
+            tryOuts: [],
+            activities: []
+        };
+
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preloader
+            const preloader = document.getElementById('preloader');
+            const loaderBar = document.getElementById('loader-bar');
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 5;
+                loaderBar.style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        preloader.style.opacity = 0;
+                        setTimeout(() => {
+                            preloader.style.display = 'none';
+                            initApp();
+                        }, 500);
+                    }, 500);
+                }
+            }, 50);
+        });
+
+
+        function initApp() {
+            loadData();
+            setupEventListeners();
+            updateUI();
+            
+            // Show setup modal if first time
+            if (!storage.profile) {
+                document.getElementById('setupModal').classList.remove('hidden');
+            }
+        }
+
+
+        function loadData() {
+            // Load profile
+            const profileData = localStorage.getItem('trackU_profile');
+            if (profileData) {
+                storage.profile = JSON.parse(profileData);
+            }
+            
+            // Load try outs
+            const tryOutsData = localStorage.getItem('trackU_tryOuts');
+            if (tryOutsData) {
+                storage.tryOuts = JSON.parse(tryOutsData);
+            }
+            
+            // Load activities
+            const activitiesData = localStorage.getItem('trackU_activities');
+            if (activitiesData) {
+                storage.activities = JSON.parse(activitiesData);
+            }
+        }
+
+
+        function saveData() {
+            localStorage.setItem('trackU_profile', JSON.stringify(storage.profile));
+            localStorage.setItem('trackU_tryOuts', JSON.stringify(storage.tryOuts));
+            localStorage.setItem('trackU_activities', JSON.stringify(storage.activities));
+        }
+
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('homeBtn').addEventListener('click', () => showPage('dashboardPage'));
+            document.getElementById('profileBtn').addEventListener('click', () => showPage('profilePage'));
+            document.getElementById('addBtn').addEventListener('click', () => document.getElementById('addMenuModal').classList.remove('hidden'));
+            
+            document.getElementById('backToHome').addEventListener('click', () => showPage('dashboardPage'));
+            document.getElementById('backToHomeFromActivity').addEventListener('click', () => showPage('dashboardPage'));
+            document.getElementById('backToHomeFromAllTryOuts').addEventListener('click', () => showPage('dashboardPage'));
+            document.getElementById('backToHomeFromAllActivities').addEventListener('click', () => showPage('dashboardPage'));
+            
+            document.getElementById('viewAllTryOuts').addEventListener('click', () => showPage('allTryOutsPage'));
+            document.getElementById('viewAllActivities').addEventListener('click', () => showPage('allActivitiesPage'));
+            
+            // Add Menu Modal
+            document.getElementById('closeAddMenu').addEventListener('click', () => document.getElementById('addMenuModal').classList.add('hidden'));
+            document.getElementById('addTryOutBtn').addEventListener('click', () => {
+                document.getElementById('addMenuModal').classList.add('hidden');
+                showPage('inputTryOutPage');
+            });
+            document.getElementById('addActivityBtn').addEventListener('click', () => {
+                document.getElementById('addMenuModal').classList.add('hidden');
+                showPage('inputActivityPage');
+            });
+            
+            // Setup Form
+            document.getElementById('setupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                storage.profile = {
+                    name: document.getElementById('username').value,
+                    kelas: document.getElementById('kelas').value,
+                    kampus: document.getElementById('kampus').value,
+                    jurusan: document.getElementById('jurusan').value
+                };
+                
+                saveData();
+                document.getElementById('setupModal').classList.add('hidden');
+                updateUI();
+            });
+            
+            // Profile Form
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                storage.profile = {
+                    name: document.getElementById('profileName').value,
+                    kelas: document.getElementById('profileKelas').value,
+                    kampus: document.getElementById('profileKampus').value,
+                    jurusan: document.getElementById('profileJurusan').value
+                };
+                
+                saveData();
+                updateUI();
+                
+                // Show confirmation
+                alert('Profil berhasil disimpan!');
+            });
+            
+            // Try Out Form
+            document.getElementById('tryOutForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('tryOutForm').dataset.id;
+                const isEdit = !!id;
+                
+                const tryOutData = {
+                    id: isEdit ? id : Date.now().toString(),
+                    name: document.getElementById('tryOutName').value,
+                    organizer: document.getElementById('organizer').value,
+                    date: document.getElementById('tryOutDate').value,
+                    notes: document.getElementById('notes').value,
+                    tps: {
+                        pu: {
+                            correct: parseInt(document.getElementById('puCorrect').value),
+                            score: parseFloat(document.getElementById('puScore').value)
+                        },
+                        ppu: {
+                            correct: parseInt(document.getElementById('ppuCorrect').value),
+                            score: parseFloat(document.getElementById('ppuScore').value)
+                        },
+                        pbm: {
+                            correct: parseInt(document.getElementById('pbmCorrect').value),
+                            score: parseFloat(document.getElementById('pbmScore').value)
+                        },
+                        pk: {
+                            correct: parseInt(document.getElementById('pkCorrect').value),
+                            score: parseFloat(document.getElementById('pkScore').value)
+                        }
+                    },
+                    literasi: {
+                        lbi: {
+                            correct: parseInt(document.getElementById('lbiCorrect').value),
+                            score: parseFloat(document.getElementById('lbiScore').value)
+                        },
+                        lbe: {
+                            correct: parseInt(document.getElementById('lbeCorrect').value),
+                            score: parseFloat(document.getElementById('lbeScore').value)
+                        },
+                        pm: {
+                            correct: parseInt(document.getElementById('pmCorrect').value),
+                            score: parseFloat(document.getElementById('pmScore').value)
+                        }
+                    }
+                };
+                
+                // Calculate total scores
+                tryOutData.totalTps = calculateTotalTps(tryOutData);
+                tryOutData.totalLiterasi = calculateTotalLiterasi(tryOutData);
+                tryOutData.totalUtbk = calculateTotalUtbk(tryOutData);
+                
+                if (isEdit) {
+                    // Update existing try out
+                    const index = storage.tryOuts.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        storage.tryOuts[index] = tryOutData;
+                    }
+                } else {
+                    // Add new try out
+                    storage.tryOuts.push(tryOutData);
+                }
+                
+                saveData();
+                resetTryOutForm();
+                showPage('dashboardPage');
+                updateUI();
+            });
+            
+            // Activity Form
+            document.getElementById('activityForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('activityForm').dataset.id;
+                const isEdit = !!id;
+                
+                const activityData = {
+                    id: isEdit ? id : Date.now().toString(),
+                    date: document.getElementById('activityDate').value,
+                    subtest: document.getElementById('activitySubtest').value,
+                    material: document.getElementById('activityMaterial').value,
+                    type: document.getElementById('activityType').value,
+                    duration: parseInt(document.getElementById('activityDuration').value),
+                    notes: document.getElementById('activityNotes').value
+                };
+                
+                if (isEdit) {
+                    // Update existing activity
+                    const index = storage.activities.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        storage.activities[index] = activityData;
+                    }
+                } else {
+                    // Add new activity
+                    storage.activities.push(activityData);
+                }
+                
+                saveData();
+                resetActivityForm();
+                showPage('dashboardPage');
+                updateUI();
+            });
+            
+            // Try Out Detail Modal
+            document.getElementById('closeTryOutDetail').addEventListener('click', () => document.getElementById('tryOutDetailModal').classList.add('hidden'));
+            document.getElementById('editTryOut').addEventListener('click', function() {
+                const id = this.dataset.id;
+                editTryOut(id);
+                document.getElementById('tryOutDetailModal').classList.add('hidden');
+            });
+            document.getElementById('deleteTryOut').addEventListener('click', function() {
+                const id = this.dataset.id;
+                showConfirmationModal('Hapus Try Out', 'Apakah kamu yakin ingin menghapus data try out ini?', () => {
+                    deleteTryOut(id);
+                    document.getElementById('tryOutDetailModal').classList.add('hidden');
+                });
+            });
+            
+            // Activity Detail Modal
+            document.getElementById('closeActivityDetail').addEventListener('click', () => document.getElementById('activityDetailModal').classList.add('hidden'));
+            document.getElementById('editActivity').addEventListener('click', function() {
+                const id = this.dataset.id;
+                editActivity(id);
+                document.getElementById('activityDetailModal').classList.add('hidden');
+            });
+            document.getElementById('deleteActivity').addEventListener('click', function() {
+                const id = this.dataset.id;
+                showConfirmationModal('Hapus Aktivitas', 'Apakah kamu yakin ingin menghapus data aktivitas ini?', () => {
+                    deleteActivity(id);
+                    document.getElementById('activityDetailModal').classList.add('hidden');
+                });
+            });
+            
+            // Confirmation Modal
+            document.getElementById('cancelConfirmation').addEventListener('click', () => document.getElementById('confirmationModal').classList.add('hidden'));
+            
+            // Try Out Score Calculation
+            const tpsInputs = ['puCorrect', 'puScore', 'ppuCorrect', 'ppuScore', 'pbmCorrect', 'pbmScore', 'pkCorrect', 'pkScore'];
+            const literasiInputs = ['lbiCorrect', 'lbiScore', 'lbeCorrect', 'lbeScore', 'pmCorrect', 'pmScore'];
+            
+            [...tpsInputs, ...literasiInputs].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateTryOutScores);
+            });
+            
+            // All Try Outs Tabs
+            document.getElementById('tabAllTryOuts').addEventListener('click', function() {
+                setActiveTab('tabAllTryOuts', ['tabAllTryOuts', 'tabTpsTryOuts', 'tabLiterasiTryOuts']);
+                updateTryOutsList('all');
+            });
+            document.getElementById('tabTpsTryOuts').addEventListener('click', function() {
+                setActiveTab('tabTpsTryOuts', ['tabAllTryOuts', 'tabTpsTryOuts', 'tabLiterasiTryOuts']);
+                updateTryOutsList('tps');
+            });
+            document.getElementById('tabLiterasiTryOuts').addEventListener('click', function() {
+                setActiveTab('tabLiterasiTryOuts', ['tabAllTryOuts', 'tabTpsTryOuts', 'tabLiterasiTryOuts']);
+                updateTryOutsList('literasi');
+            });
+            
+            // All Activities Tabs
+            document.getElementById('tabAllActivities').addEventListener('click', function() {
+                setActiveTab('tabAllActivities', ['tabAllActivities', 'tabTpsActivities', 'tabLiterasiActivities']);
+                updateActivitiesList('all');
+            });
+            document.getElementById('tabTpsActivities').addEventListener('click', function() {
+                setActiveTab('tabTpsActivities', ['tabAllActivities', 'tabTpsActivities', 'tabLiterasiActivities']);
+                updateActivitiesList('tps');
+            });
+            document.getElementById('tabLiterasiActivities').addEventListener('click', function() {
+setActiveTab('tabLiterasiActivities', ['tabAllActivities', 'tabTpsActivities', 'tabLiterasiActivities']);
+updateActivitiesList('literasi');
+});
+        // Sort Try Outs
+        document.getElementById('sortTryOuts').addEventListener('change', function() {
+            const activeTab = document.querySelector('.tab-active').id;
+            let filter = 'all';
+            
+            if (activeTab === 'tabTpsTryOuts') filter = 'tps';
+            else if (activeTab === 'tabLiterasiTryOuts') filter = 'literasi';
+            
+            updateTryOutsList(filter);
+        });
+        
+        // Sort Activities
+        document.getElementById('sortActivities').addEventListener('change', function() {
+            const activeTab = document.querySelector('.tab-active').id;
+            let filter = 'all';
+            
+            if (activeTab === 'tabTpsActivities') filter = 'tps';
+            else if (activeTab === 'tabLiterasiActivities') filter = 'literasi';
+            
+            updateActivitiesList(filter);
+        });
+    }
+
+
+    function showPage(pageId) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.add('hidden');
+        });
+        
+        // Show selected page
+        document.getElementById(pageId).classList.remove('hidden');
+        
+        // Update bottom navigation
+        if (pageId === 'dashboardPage') {
+            document.getElementById('homeBtn').classList.add('text-indigo-600');
+            document.getElementById('homeBtn').classList.remove('text-gray-500');
+            document.getElementById('profileBtn').classList.add('text-gray-500');
+            document.getElementById('profileBtn').classList.remove('text-indigo-600');
+        } else if (pageId === 'profilePage') {
+            document.getElementById('profileBtn').classList.add('text-indigo-600');
+            document.getElementById('profileBtn').classList.remove('text-gray-500');
+            document.getElementById('homeBtn').classList.add('text-gray-500');
+            document.getElementById('homeBtn').classList.remove('text-indigo-600');
+        }
+        
+        // Special page initializations
+        if (pageId === 'dashboardPage') {
+            initDashboard();
+        } else if (pageId === 'allTryOutsPage') {
+            updateTryOutsList('all');
+        } else if (pageId === 'allActivitiesPage') {
+            updateActivitiesList('all');
+        } else if (pageId === 'inputTryOutPage') {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tryOutDate').value = today;
+        } else if (pageId === 'inputActivityPage') {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('activityDate').value = today;
+        }
+    }
+
+
+    function updateUI() {
+        // Update profile information
+        if (storage.profile) {
+            document.getElementById('userNameDisplay').textContent = storage.profile.name;
+            document.getElementById('kampusDisplay').textContent = storage.profile.kampus;
+            
+            document.getElementById('profileName').value = storage.profile.name;
+            document.getElementById('profileKelas').value = storage.profile.kelas;
+            document.getElementById('profileKampus').value = storage.profile.kampus;
+            document.getElementById('profileJurusan').value = storage.profile.jurusan;
+            
+            // Update profile initial
+            const initial = storage.profile.name.charAt(0).toUpperCase();
+            document.getElementById('profileInitial').textContent = initial;
+        }
+        
+        // Update dashboard stats
+        updateDashboardStats();
+        
+        // Update profile stats
+        updateProfileStats();
+    }
+
+
+    function updateDashboardStats() {
+        const totalTryOut = storage.tryOuts.length;
+        document.getElementById('totalTryOut').textContent = totalTryOut;
+        
+        if (totalTryOut > 0) {
+            // Calculate average TPS score
+            const avgTPS = storage.tryOuts.reduce((sum, tryOut) => sum + tryOut.totalTps, 0) / totalTryOut;
+            document.getElementById('avgTPS').textContent = avgTPS.toFixed(1);
+            
+            // Calculate average Literasi score
+            const avgLiterasi = storage.tryOuts.reduce((sum, tryOut) => sum + tryOut.totalLiterasi, 0) / totalTryOut;
+            document.getElementById('avgLiterasi').textContent = avgLiterasi.toFixed(1);
+            
+            // Update progress status
+            if (totalTryOut >= 2) {
+                const latestTryOuts = [...storage.tryOuts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 2);
+                const latestScore = latestTryOuts[0].totalUtbk;
+                const previousScore = latestTryOuts[1].totalUtbk;
+                
+                const diff = latestScore - previousScore;
+                const progressElement = document.getElementById('progressStatus');
+                
+                if (diff > 50) {
+                    progressElement.textContent = 'Meningkat Pesat';
+                    progressElement.className = 'text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full';
+                } else if (diff > 0) {
+                    progressElement.textContent = 'Meningkat';
+                    progressElement.className = 'text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full';
+                } else if (diff === 0) {
+                    progressElement.textContent = 'Stabil';
+                    progressElement.className = 'text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full';
+                } else if (diff > -50) {
+                    progressElement.textContent = 'Menurun';
+                    progressElement.className = 'text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full';
+                } else {
+                    progressElement.textContent = 'Menurun Drastis';
+                    progressElement.className = 'text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full';
+                }
+            }
+        } else {
+            document.getElementById('avgTPS').textContent = '0.0';
+            document.getElementById('avgLiterasi').textContent = '0.0';
+        }
+        
+        // Update recent try outs list
+        updateRecentTryOuts();
+        
+        // Update recent activities list
+        updateRecentActivities();
+    }
+
+
+    function updateProfileStats() {
+        const totalTryOut = storage.tryOuts.length;
+        document.getElementById('profileTotalTryOut').textContent = totalTryOut;
+        
+        // Calculate total study hours
+        const totalMinutes = storage.activities.reduce((sum, activity) => sum + activity.duration, 0);
+        const totalHours = Math.round(totalMinutes / 60 * 10) / 10;
+        document.getElementById('profileTotalHours').textContent = totalHours;
+        
+        if (totalTryOut > 0) {
+            // Calculate highest score
+            const highestScore = Math.max(...storage.tryOuts.map(tryOut => tryOut.totalUtbk));
+            document.getElementById('profileHighestScore').textContent = highestScore.toFixed(1);
+            
+            // Calculate average score
+            const avgScore = storage.tryOuts.reduce((sum, tryOut) => sum + tryOut.totalUtbk, 0) / totalTryOut;
+            document.getElementById('profileAvgScore').textContent = avgScore.toFixed(1);
+        } else {
+            document.getElementById('profileHighestScore').textContent = '0.0';
+            document.getElementById('profileAvgScore').textContent = '0.0';
+        }
+    }
+
+
+    function initDashboard() {
+        // Initialize progress chart
+        initProgressChart();
+    }
+
+
+    function initProgressChart() {
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        
+        // Sort try outs by date
+        const sortedTryOuts = [...storage.tryOuts].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        const labels = sortedTryOuts.map(tryOut => {
+            const date = new Date(tryOut.date);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        });
+        
+        const tpsData = sortedTryOuts.map(tryOut => tryOut.totalTps);
+        const literasiData = sortedTryOuts.map(tryOut => tryOut.totalLiterasi);
+        const totalData = sortedTryOuts.map(tryOut => tryOut.totalUtbk);
+        
+        // Destroy existing chart if it exists
+        if (window.progressChart) {
+            window.progressChart.destroy();
+        }
+        
+        window.progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'TPS',
+                        data: tpsData,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Literasi',
+                        data: literasiData,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Total',
+                        data: totalData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 300,
+                        max: 1000,
+                        ticks: {
+                            stepSize: 100
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // If no data, show empty state
+        if (sortedTryOuts.length === 0) {
+            const emptyStateDiv = document.createElement('div');
+            emptyStateDiv.className = 'absolute inset-0 flex items-center justify-center';
+            emptyStateDiv.innerHTML = '<div class="text-center text-gray-500">Belum ada data try out.<br>Tambahkan hasil try out pertamamu!</div>';
+            
+            const chartContainer = document.querySelector('.chart-container');
+            chartContainer.appendChild(emptyStateDiv);
+        }
+    }
+
+
+    function updateRecentTryOuts() {
+        const recentTryOutsList = document.getElementById('recentTryOutsList');
+        
+        // Sort try outs by date (newest first)
+        const sortedTryOuts = [...storage.tryOuts].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Get up to 3 most recent try outs
+        const recentTryOuts = sortedTryOuts.slice(0, 3);
+        
+        if (recentTryOuts.length > 0) {
+            let html = '';
+            
+            recentTryOuts.forEach(tryOut => {
+                const date = new Date(tryOut.date);
+                const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                html += `
+                    <div class="bg-gray-50 p-3 rounded-lg" data-id="${tryOut.id}">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">${tryOut.name}</div>
+                            <div class="text-xs text-gray-500">${formattedDate}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-3">
+                                <div class="text-xs">
+                                    <span class="text-gray-500">TPS:</span>
+                                    <span class="font-medium text-indigo-600">${tryOut.totalTps.toFixed(1)}</span>
+                                </div>
+                                <div class="text-xs">
+                                    <span class="text-gray-500">Literasi:</span>
+                                    <span class="font-medium text-purple-600">${tryOut.totalLiterasi.toFixed(1)}</span>
+                                </div>
+                            </div>
+                            <div class="text-sm font-bold">${tryOut.totalUtbk.toFixed(1)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            recentTryOutsList.innerHTML = html;
+            
+            // Add click event to show try out details
+            recentTryOutsList.querySelectorAll('[data-id]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    showTryOutDetail(id);
+                });
+            });
+        } else {
+            recentTryOutsList.innerHTML = `
+                <div class="text-center text-gray-500 py-6">
+                    Belum ada data try out.<br>
+                    Tambahkan hasil try out pertamamu!
+                </div>
+            `;
+        }
+    }
+
+
+    function updateRecentActivities() {
+        const recentActivitiesList = document.getElementById('recentActivitiesList');
+        
+        // Sort activities by date (newest first)
+        const sortedActivities = [...storage.activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Get up to 3 most recent activities
+        const recentActivities = sortedActivities.slice(0, 3);
+        
+        if (recentActivities.length > 0) {
+            let html = '';
+            
+            recentActivities.forEach(activity => {
+                const date = new Date(activity.date);
+                const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                // Get subtest category (TPS or Literasi)
+                let category = '';
+                if (['PU', 'PPU', 'PBM', 'PK'].includes(activity.subtest)) {
+                    category = 'TPS';
+                } else if (['LBI', 'LBE', 'PM'].includes(activity.subtest)) {
+                    category = 'Literasi';
+                } else {
+                    category = 'Umum';
+                }
+                
+                // Get subtest full name
+                let subtestName = getSubtestName(activity.subtest);
+                
+                html += `
+                    <div class="bg-gray-50 p-3 rounded-lg" data-id="${activity.id}">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">${activity.material}</div>
+                            <div class="text-xs text-gray-500">${formattedDate}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="text-xs px-2 py-1 rounded-full ${category === 'TPS' ? 'bg-indigo-100 text-indigo-700' : category === 'Literasi' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'} mr-2">
+                                    ${activity.subtest}
+                                </div>
+                                <div class="text-xs text-gray-500">${activity.type}</div>
+                            </div>
+                            <div class="text-xs font-medium">${activity.duration} menit</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            recentActivitiesList.innerHTML = html;
+            
+            // Add click event to show activity details
+            recentActivitiesList.querySelectorAll('[data-id]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    showActivityDetail(id);
+                });
+            });
+        } else {
+            recentActivitiesList.innerHTML = `
+                <div class="text-center text-gray-500 py-6">
+                    Belum ada data aktivitas belajar.<br>
+                    Catat aktivitas belajarmu!
+                </div>
+            `;
+        }
+    }
+
+
+    function updateTryOutsList(filter = 'all') {
+        const allTryOutsList = document.getElementById('allTryOutsList');
+        const sortValue = document.getElementById('sortTryOuts').value;
+        
+        // Filter try outs
+        let filteredTryOuts = [...storage.tryOuts];
+        
+        // Sort try outs
+        switch (sortValue) {
+            case 'date-desc':
+                filteredTryOuts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                break;
+            case 'date-asc':
+                filteredTryOuts.sort((a, b) => new Date(a.date) - new Date(b.date));
+                break;
+            case 'score-desc':
+                filteredTryOuts.sort((a, b) => b.totalUtbk - a.totalUtbk);
+                break;
+            case 'score-asc':
+                filteredTryOuts.sort((a, b) => a.totalUtbk - b.totalUtbk);
+                break;
+        }
+        
+        if (filteredTryOuts.length > 0) {
+            let html = '';
+            
+            filteredTryOuts.forEach(tryOut => {
+                const date = new Date(tryOut.date);
+                const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                // Skip if not matching filter
+                if (filter === 'tps' && tryOut.totalTps < tryOut.totalLiterasi) return;
+                if (filter === 'literasi' && tryOut.totalLiterasi < tryOut.totalTps) return;
+                
+                html += `
+                    <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm" data-id="${tryOut.id}">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">${tryOut.name}</div>
+                            <div class="text-xs text-gray-500">${formattedDate}</div>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-3">${tryOut.organizer}</div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-3">
+                                <div class="text-xs">
+                                    <span class="text-gray-500">TPS:</span>
+                                    <span class="font-medium text-indigo-600">${tryOut.totalTps.toFixed(1)}</span>
+                                </div>
+                                <div class="text-xs">
+                                    <span class="text-gray-500">Literasi:</span>
+                                    <span class="font-medium text-purple-600">${tryOut.totalLiterasi.toFixed(1)}</span>
+                                </div>
+                            </div>
+                            <div class="text-sm font-bold">${tryOut.totalUtbk.toFixed(1)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (html === '') {
+                allTryOutsList.innerHTML = `
+                    <div class="text-center text-gray-500 py-6">
+                        Tidak ada data try out yang sesuai filter.<br>
+                        Coba filter lainnya!
+                    </div>
+                `;
+            } else {
+                allTryOutsList.innerHTML = html;
+                
+                // Add click event to show try out details
+                allTryOutsList.querySelectorAll('[data-id]').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        showTryOutDetail(id);
+                    });
+                });
+            }
+        } else {
+            allTryOutsList.innerHTML = `
+                <div class="text-center text-gray-500 py-6">
+                    Belum ada data try out.<br>
+                    Tambahkan hasil try out pertamamu!
+                </div>
+            `;
+        }
+    }
+
+
+    function updateActivitiesList(filter = 'all') {
+        const allActivitiesList = document.getElementById('allActivitiesList');
+        const sortValue = document.getElementById('sortActivities').value;
+        
+        // Filter activities
+        let filteredActivities = [...storage.activities];
+        
+        // Apply category filter
+        if (filter === 'tps') {
+            filteredActivities = filteredActivities.filter(activity => 
+                ['PU', 'PPU', 'PBM', 'PK'].includes(activity.subtest)
+            );
+        } else if (filter === 'literasi') {
+            filteredActivities = filteredActivities.filter(activity => 
+                ['LBI', 'LBE', 'PM'].includes(activity.subtest)
+            );
+        }
+        
+        // Sort activities
+        switch (sortValue) {
+            case 'date-desc':
+                filteredActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+                break;
+            case 'date-asc':
+                filteredActivities.sort((a, b) => new Date(a.date) - new Date(b.date));
+                break;
+            case 'duration-desc':
+                filteredActivities.sort((a, b) => b.duration - a.duration);
+                break;
+            case 'duration-asc':
+                filteredActivities.sort((a, b) => a.duration - b.duration);
+                break;
+        }
+        
+        if (filteredActivities.length > 0) {
+            let html = '';
+            
+            filteredActivities.forEach(activity => {
+                const date = new Date(activity.date);
+                const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                // Get subtest category (TPS or Literasi)
+                let category = '';
+                if (['PU', 'PPU', 'PBM', 'PK'].includes(activity.subtest)) {
+                    category = 'TPS';
+                } else if (['LBI', 'LBE', 'PM'].includes(activity.subtest)) {
+                    category = 'Literasi';
+                } else {
+                    category = 'Umum';
+                }
+                
+                // Get subtest full name
+                let subtestName = getSubtestName(activity.subtest);
+                
+                html += `
+                    <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm" data-id="${activity.id}">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">${activity.material}</div>
+                            <div class="text-xs text-gray-500">${formattedDate}</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="text-xs text-gray-500">${subtestName}</div>
+                            <div class="text-xs px-2 py-1 rounded-full ${category === 'TPS' ? 'bg-indigo-100 text-indigo-700' : category === 'Literasi' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
+                                ${activity.subtest}
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs text-gray-500">${activity.type}</div>
+                            <div class="text-xs font-medium">${activity.duration} menit</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            allActivitiesList.innerHTML = html;
+            
+            // Add click event to show activity details
+            allActivitiesList.querySelectorAll('[data-id]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    showActivityDetail(id);
+                });
+            });
+        } else {
+            allActivitiesList.innerHTML = `
+                <div class="text-center text-gray-500 py-6">
+                    ${filter === 'all' ? 'Belum ada data aktivitas belajar.<br>Catat aktivitas belajarmu!' : 'Tidak ada data aktivitas yang sesuai filter.<br>Coba filter lainnya!'}
+                </div>
+            `;
+        }
+    }
+
+
+    function showTryOutDetail(id) {
+        const tryOut = storage.tryOuts.find(item => item.id === id);
+        
+        if (tryOut) {
+            const date = new Date(tryOut.date);
+            const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            document.getElementById('detailTryOutName').textContent = tryOut.name;
+            document.getElementById('detailOrganizer').textContent = tryOut.organizer;
+            document.getElementById('detailDate').textContent = formattedDate;
+            
+            document.getElementById('detailPuCorrect').textContent = tryOut.tps.pu.correct;
+            document.getElementById('detailPuScore').textContent = tryOut.tps.pu.score.toFixed(1);
+            
+            document.getElementById('detailPpuCorrect').textContent = tryOut.tps.ppu.correct;
+            document.getElementById('detailPpuScore').textContent = tryOut.tps.ppu.score.toFixed(1);
+            
+            document.getElementById('detailPbmCorrect').textContent = tryOut.tps.pbm.correct;
+            document.getElementById('detailPbmScore').textContent = tryOut.tps.pbm.score.toFixed(1);
+            
+            document.getElementById('detailPkCorrect').textContent = tryOut.tps.pk.correct;
+            document.getElementById('detailPkScore').textContent = tryOut.tps.pk.score.toFixed(1);
+            
+            document.getElementById('detailLbiCorrect').textContent = tryOut.literasi.lbi.correct;
+            document.getElementById('detailLbiScore').textContent = tryOut.literasi.lbi.score.toFixed(1);
+            
+            document.getElementById('detailLbeCorrect').textContent = tryOut.literasi.lbe.correct;
+            document.getElementById('detailLbeScore').textContent = tryOut.literasi.lbe.score.toFixed(1);
+            
+            document.getElementById('detailPmCorrect').textContent = tryOut.literasi.pm.correct;
+            document.getElementById('detailPmScore').textContent = tryOut.literasi.pm.score.toFixed(1);
+            
+            document.getElementById('detailTotalTps').textContent = tryOut.totalTps.toFixed(1);
+            document.getElementById('detailTotalLiterasi').textContent = tryOut.totalLiterasi.toFixed(1);
+            document.getElementById('detailTotalUtbk').textContent = tryOut.totalUtbk.toFixed(1);
+            
+            // Notes
+            const notesContainer = document.getElementById('detailNotesContainer');
+            const notesElement = document.getElementById('detailNotes');
+            
+            if (tryOut.notes && tryOut.notes.trim() !== '') {
+                notesElement.textContent = tryOut.notes;
+                notesContainer.classList.remove('hidden');
+            } else {
+                notesContainer.classList.add('hidden');
+            }
+            
+            // Set ID for edit and delete buttons
+            document.getElementById('editTryOut').dataset.id = id;
+            document.getElementById('deleteTryOut').dataset.id = id;
+            
+            // Show modal
+            document.getElementById('tryOutDetailModal').classList.remove('hidden');
+        }
+    }
+
+
+    function showActivityDetail(id) {
+        const activity = storage.activities.find(item => item.id === id);
+        
+        if (activity) {
+            const date = new Date(activity.date);
+            const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            document.getElementById('detailActivityMaterial').textContent = activity.material;
+            document.getElementById('detailActivityDate').textContent = formattedDate;
+            document.getElementById('detailActivitySubtest').textContent = `${activity.subtest} (${getSubtestName(activity.subtest)})`;
+            document.getElementById('detailActivityType').textContent = activity.type;
+            document.getElementById('detailActivityDuration').textContent = `${activity.duration} menit`;
+            
+            // Notes
+            const notesContainer = document.getElementById('detailActivityNotesContainer');
+            const notesElement = document.getElementById('detailActivityNotes');
+            
+            if (activity.notes && activity.notes.trim() !== '') {
+                notesElement.textContent = activity.notes;
+                notesContainer.classList.remove('hidden');
+            } else {
+                notesContainer.classList.add('hidden');
+            }
+            
+            // Set ID for edit and delete buttons
+            document.getElementById('editActivity').dataset.id = id;
+            document.getElementById('deleteActivity').dataset.id = id;
+            
+            // Show modal
+            document.getElementById('activityDetailModal').classList.remove('hidden');
+        }
+    }
+
+
+    function editTryOut(id) {
+        const tryOut = storage.tryOuts.find(item => item.id === id);
+        
+        if (tryOut) {
+            // Set form as edit mode
+            document.getElementById('tryOutForm').dataset.id = id;
+            
+            // Fill form with try out data
+            document.getElementById('tryOutName').value = tryOut.name;
+            document.getElementById('organizer').value = tryOut.organizer;
+            document.getElementById('tryOutDate').value = tryOut.date;
+            document.getElementById('notes').value = tryOut.notes || '';
+            
+            document.getElementById('puCorrect').value = tryOut.tps.pu.correct;
+            document.getElementById('puScore').value = tryOut.tps.pu.score;
+            
+            document.getElementById('ppuCorrect').value = tryOut.tps.ppu.correct;
+            document.getElementById('ppuScore').value = tryOut.tps.ppu.score;
+            
+            document.getElementById('pbmCorrect').value = tryOut.tps.pbm.correct;
+            document.getElementById('pbmScore').value = tryOut.tps.pbm.score;
+            
+            document.getElementById('pkCorrect').value = tryOut.tps.pk.correct;
+            document.getElementById('pkScore').value = tryOut.tps.pk.score;
+            
+            document.getElementById('lbiCorrect').value = tryOut.literasi.lbi.correct;
+            document.getElementById('lbiScore').value = tryOut.literasi.lbi.score;
+            
+            document.getElementById('lbeCorrect').value = tryOut.literasi.lbe.correct;
+            document.getElementById('lbeScore').value = tryOut.literasi.lbe.score;
+            
+            document.getElementById('pmCorrect').value = tryOut.literasi.pm.correct;
+            document.getElementById('pmScore').value = tryOut.literasi.pm.score;
+            
+            // Update calculated scores
+            updateTryOutScores();
+            
+            // Show input try out page
+            showPage('inputTryOutPage');
+        }
+    }
+
+
+    function editActivity(id) {
+        const activity = storage.activities.find(item => item.id === id);
+        
+        if (activity) {
+            // Set form as edit mode
+            document.getElementById('activityForm').dataset.id = id;
+            
+            // Fill form with activity data
+            document.getElementById('activityDate').value = activity.date;
+            document.getElementById('activitySubtest').value = activity.subtest;
+            document.getElementById('activityMaterial').value = activity.material;
+            document.getElementById('activityType').value = activity.type;
+            document.getElementById('activityDuration').value = activity.duration;
+            document.getElementById('activityNotes').value = activity.notes || '';
+            
+            // Show input activity page
+            showPage('inputActivityPage');
+        }
+    }
+
+
+    function deleteTryOut(id) {
+        const index = storage.tryOuts.findIndex(item => item.id === id);
+        
+        if (index !== -1) {
+            storage.tryOuts.splice(index, 1);
+            saveData();
+            updateUI();
+            
+            // If on all try outs page, update the list
+            if (!document.getElementById('allTryOutsPage').classList.contains('hidden')) {
+                const activeTab = document.querySelector('.tab-active').id;
+                let filter = 'all';
+                
+                if (activeTab === 'tabTpsTryOuts') filter = 'tps';
+                else if (activeTab === 'tabLiterasiTryOuts') filter = 'literasi';
+                
+                updateTryOutsList(filter);
+            }
+        }
+    }
+
+
+    function deleteActivity(id) {
+        const index = storage.activities.findIndex(item => item.id === id);
+        
+        if (index !== -1) {
+            storage.activities.splice(index, 1);
+            saveData();
+            updateUI();
+            
+            // If on all activities page, update the list
+            if (!document.getElementById('allActivitiesPage').classList.contains('hidden')) {
+                const activeTab = document.querySelector('.tab-active').id;
+                let filter = 'all';
+                
+                if (activeTab === 'tabTpsActivities') filter = 'tps';
+                else if (activeTab === 'tabLiterasiActivities') filter = 'literasi';
+                
+                updateActivitiesList(filter);
+            }
+        }
+    }
+
+
+    function showConfirmationModal(title, message, confirmCallback) {
+        document.getElementById('confirmationTitle').textContent = title;
+        document.getElementById('confirmationMessage').textContent = message;
+        
+        // Set confirm action
+        document.getElementById('confirmAction').onclick = function() {
+            confirmCallback();
+            document.getElementById('confirmationModal').classList.add('hidden');
+        };
+        
+        // Show modal
+        document.getElementById('confirmationModal').classList.remove('hidden');
+    }
+
+
+    function resetTryOutForm() {
+        document.getElementById('tryOutForm').reset();
+        document.getElementById('tryOutForm').removeAttribute('data-id');
+        
+        // Reset calculated scores
+        document.getElementById('totalTpsScore').textContent = '0.0';
+        document.getElementById('totalLiterasiScore').textContent = '0.0';
+        document.getElementById('totalUtbkScore').textContent = '0.0';
+        
+        // Set today's date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tryOutDate').value = today;
+    }
+
+
+    function resetActivityForm() {
+        document.getElementById('activityForm').reset();
+        document.getElementById('activityForm').removeAttribute('data-id');
+        
+        // Set today's date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('activityDate').value = today;
+    }
+
+
+    function updateTryOutScores() {
+        // Get TPS scores
+        const puScore = parseFloat(document.getElementById('puScore').value) || 0;
+        const ppuScore = parseFloat(document.getElementById('ppuScore').value) || 0;
+        const pbmScore = parseFloat(document.getElementById('pbmScore').value) || 0;
+        const pkScore = parseFloat(document.getElementById('pkScore').value) || 0;
+        
+        // Get Literasi scores
+        const lbiScore = parseFloat(document.getElementById('lbiScore').value) || 0;
+        const lbeScore = parseFloat(document.getElementById('lbeScore').value) || 0;
+        const pmScore = parseFloat(document.getElementById('pmScore').value) || 0;
+        
+        // Calculate total TPS score
+        const totalTps = (puScore + ppuScore + pbmScore + pkScore) / 4;
+        document.getElementById('totalTpsScore').textContent = totalTps.toFixed(1);
+        
+        // Calculate total Literasi score
+        const totalLiterasi = (lbiScore + lbeScore + pmScore) / 3;
+        document.getElementById('totalLiterasiScore').textContent = totalLiterasi.toFixed(1);
+        
+        // Calculate total UTBK score
+        const totalUtbk = (totalTps + totalLiterasi) / 2;
+        document.getElementById('totalUtbkScore').textContent = totalUtbk.toFixed(1);
+    }
+
+
+    function calculateTotalTps(tryOut) {
+        return (tryOut.tps.pu.score + tryOut.tps.ppu.score + tryOut.tps.pbm.score + tryOut.tps.pk.score) / 4;
+    }
+
+
+    function calculateTotalLiterasi(tryOut) {
+        return (tryOut.literasi.lbi.score + tryOut.literasi.lbe.score + tryOut.literasi.pm.score) / 3;
+    }
+
+
+    function calculateTotalUtbk(tryOut) {
+        return (calculateTotalTps(tryOut) + calculateTotalLiterasi(tryOut)) / 2;
+    }
+
+
+    function getSubtestName(code) {
+        const subtestNames = {
+            'PU': 'Penalaran Umum',
+            'PPU': 'Pemahaman Bacaan & Menulis',
+            'PBM': 'Pengetahuan & Pemahaman Umum',
+            'PK': 'Pengetahuan Kuantitatif',
+            'LBI': 'Bahasa Indonesia',
+            'LBE': 'Bahasa Inggris',
+            'PM': 'Penalaran Matematika',
+            'Umum': 'Semua Subtes'
+        };
+        
+        return subtestNames[code] || code;
+    }
+
+
+    function setActiveTab(activeTabId, allTabIds) {
+        allTabIds.forEach(tabId => {
+            const tab = document.getElementById(tabId);
+            if (tabId === activeTabId) {
+                tab.classList.add('tab-active');
+                tab.classList.remove('tab-inactive');
+            } else {
+                tab.classList.add('tab-inactive');
+                tab.classList.remove('tab-active');
+            }
+        });
+    }
+</script>
+</body>
+</html>
